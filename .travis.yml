@@ -3,8 +3,6 @@ language: python
 python:
     - "3.7"
 
-sudo: false
-
 # [Browsers]
 addons:
     chrome: stable
@@ -19,8 +17,8 @@ install:
     - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
     - source $HOME/.poetry/env
     - poetry install --no-dev
-    - ./install_chromedriver.sh
-    - ./install_gecko.sh
+    - sudo ./install_chromedriver.sh
+    - sudo ./install_gecko.sh
 
 # [RUN]
 script:
