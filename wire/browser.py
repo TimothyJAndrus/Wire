@@ -110,7 +110,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
 
             @returns string
         """
-        return f"{self.sn}"
+        return self.sn
 
     def __repr__(self) -> str:
         """
@@ -120,6 +120,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
         """
         return self.__str__()
 
+    @typechecked
     def __getitem__(
         self, elem: str, delay: int = 5
     ) -> Optional[Union[List, WebElement]]:

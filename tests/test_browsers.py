@@ -1,88 +1,91 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import pytest
 
 from wire.browser import *
 
-
-class Test_Bad_Browser:
-
-    @pytest.mark.xfail(raises=ValueError)
-    def test_chrome_without_head_value(self):
-        with Browser(False) as _:
-            pass
-
+@pytest.mark.smoke
 @pytest.mark.incremental
-class Test_Chrome_Browser_Instantiation:
-    def test_chrome_without_head_value(self):
-        with Chrome(False) as _:
-            pass
+@pytest.mark.usefixtures("wiretap")
+class TestDunders:
 
-    def test_name(self):
-        with Chrome(False) as _:
-            assert str(_) == "Chrome"
+    def test_init(self):
 
-    def test_links(self):
+        newBrowser = Firefox(True)
+        del newBrowser
+
+        newBrowser = Chrome(True)
+        del newBrowser
+
+    def test_str(self):
+        assert str(self.wire) in ["Firefox", "Chrome"]
+
+    def test_repr(self):
+        assert repr(self.wire) in ["Firefox", "Chrome"]
+
+    def test_context(self):
         with Chrome(True) as _:
-            _.get("https://google.com")
-            assert repr(_) == str(_)
-
-    def test_url(self):
-        with Chrome(True) as _:
-            _.get("https://google.com")
-            assert _.url == "https://www.google.com/"
-
-    # find a better way to test the source code
-    def test_source(self):
-        with Chrome(True) as _:
-            _.get("https://google.com")
             assert True
 
-    def test_links(self):
-        with Chrome(True) as _:
-            _.get("https://google.com")
-            assert len(_.links) > 1
-
-    @pytest.mark.parametrize("head", [(1), ("1"), ([]), ({})])
-    @pytest.mark.xfail(raises=TypeError)
-    def test_chrome_with_head_bad_value(self, head):
-        with Chrome(head) as _:
-            pass
-
-    @pytest.mark.parametrize("head", [(True), (False)])
-    def test_chrome_with_head_value(self, head):
-        with Chrome(head) as _:
-            pass
-
-    @pytest.mark.xfail(raises=TypeError)
-    def test_chrome_bad_value(self):
-        with Chrome("False") as _:
-            pass
-
-
-@pytest.mark.incremental
-class Test_Firefox_Browser_Instantiation:
-    def test_firefox_without_head_value(self):
-        with Firefox(False) as _:
-            pass
-
-    def test_name(self):
         with Firefox(True) as _:
-            assert str(_) == "Firefox"
+            assert True
 
-    @pytest.mark.parametrize("head", [(1), ("1"), ([]), ({})])
+    def test_getitem_class(self):
+        self.wire.get("https://google.com")
+        classx = self.wire["*//a[@class]"][0].get_attribute("class")
+        assert self.wire[f".{classx}"]
+
+    def test_getitem_id(self):
+        self.wire.get("https://google.com")
+        id = self.wire["*//a[@id]"][0].get_attribute("id")
+        assert self.wire[f"#{id}"]
+
+
+    def test_getitem_name(self):
+        self.wire.get("https://google.com")
+        name = self.wire["*//input[@name]"][0].get_attribute("name")
+        assert self.wire[f"@{name}"]
+
+
+    def test_getitem_tag(self):
+        self.wire.get("https://google.com")
+        assert self.wire["~div"]
+
+    def test_getitem_xpath(self):
+        self.wire.get("https://google.com")
+        assert self.wire[f"*//input[@name]"]
+
+    def test_getitem_css(self):
+        self.wire.get("https://google.com")
+        assert self.wire[f"_#viewport"]
+
+    @pytest.mark.xfail(raises=ValueError)
+    def test_getitem_missing_identifier(self):
+        self.wire.get("https://google.com")
+        assert self.wire["o"]
+
+    # @pytest.mark.xfail()
+    def test_getitem_empty(self):
+        self.wire.get("https://google.com")
+        assert self.wire[""] is None
+
     @pytest.mark.xfail(raises=TypeError)
-    def test_firefox_with_head_bad_value(self, head):
-        with Firefox(head) as _:
-            pass
+    def test_getitem_bad_type(self):
+        self.wire.get("https://google.com")
+        assert self.wire[1] is None
 
-    @pytest.mark.parametrize("head", [(True), (False)])
-    def test_firefox_with_head_value(self, head):
-        with Firefox(head) as _:
-            pass
+    def test_get(self):
+        self.wire.get("https://google.com")
+        assert self.wire.url == "https://www.google.com"
 
-    @pytest.mark.xfail(raises=TypeError)
-    def test_firefox_bad_value(self):
-        with Firefox("False") as _:
-            pass
+    @pytest.mark.xfail(raises=AssertionError)
+    def test_bad_get(self):
+        assert self.wire.get("lasjfkjoiewjfnjonodsangl")
+
+    def test_links(self):
+        assert self.wire.links
+
+    def test_source(self):
+        assert self.wire.source
