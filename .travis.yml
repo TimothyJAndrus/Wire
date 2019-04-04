@@ -15,6 +15,8 @@ install:
     - sudo ./install_gecko.sh
     - sudo chmod 777 -R /usr/local/bin/geckodriver
     - sudo chmod 777 -R /usr/local/bin/chromedriver
+    - ls /usr/local/bin/geckodriver
+    - ls /usr/local/bin/chromedriver
     - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
     - source $HOME/.poetry/env
     - poetry install --no-dev
