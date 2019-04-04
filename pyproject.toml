@@ -23,7 +23,7 @@ exclude = '''
 '''
 
 [tool.poetry.dependencies]
-python = "3.7.^"
+python = "^3.7.1"
 
 # Testing libraries
 selenium = "3.141.^"
