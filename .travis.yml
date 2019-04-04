@@ -21,7 +21,7 @@ install:
 
 # [RUN]
 script:
-    - poetry run pytest tests/ --cov=wire -x
+    - poetry run pytest tests/ --cov=wire -x --headless
 
 after-script:
     codecov
