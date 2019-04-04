@@ -1,5 +1,4 @@
 # Wire
----
 
 <p align="center">
     <img alt="License: MIT" src="https://img.shields.io/apm/l/vim-mode.svg?style=flat">

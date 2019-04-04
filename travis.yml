@@ -1,0 +1,26 @@
+dist: xenial
+language: python
+python:
+    - "3.7"
+
+# [Browsers]
+addons:
+  chrome: stable
+  firefox: stable
+
+# [GUI]
+services:
+  - xvfb
+
+# [Installation]
+install:
+  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
+  - source $HOME/.poetry/env
+  - poetry install
+
+# [RUN]
+script:
+  - poetry run pytest tests/ --cov=wire
+
+after-script:
+  codecov
