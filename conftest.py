@@ -6,6 +6,7 @@ import pytest
 from wire.browser import *
 
 
+
 def pytest_runtest_makereport(item, call):
     if "incremental" in item.keywords:
         if call.excinfo is not None:

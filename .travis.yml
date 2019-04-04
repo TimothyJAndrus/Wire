@@ -1,3 +1,4 @@
+sudo: required
 dist: xenial
 language: python
 python:
@@ -14,15 +15,17 @@ services:
 
 # [Installation]
 install:
+    - sudo ./install_chromedriver.sh
+    - sudo ./install_gecko.sh
+    - chmod 755 -R /usr/local/bin/geckodriver
+    - chmod 755 -R /usr/local/bin/chromedriver
     - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
     - source $HOME/.poetry/env
     - poetry install --no-dev
-    - sudo ./install_chromedriver.sh
-    - sudo ./install_gecko.sh
 
 # [RUN]
 script:
-    - poetry run pytest tests/ --cov=wire
+    - poetry run pytest tests/ --cov=wire -x
 
 after-script:
     codecov
