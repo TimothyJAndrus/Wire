@@ -73,7 +73,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
         getattr(webdriver, self.sn).__init__(
             self,
             options=self.options,
-            executable_path="/usr/local/bin"+("geckodriver" if self.sn == "Firefox" else "chromedriver"),
+            executable_path="/usr/local/bin/"+("geckodriver" if self.sn == "Firefox" else "chromedriver"),
             desired_capabilities=getattr(DesiredCapabilities, self.sn.upper()),
         )
 
