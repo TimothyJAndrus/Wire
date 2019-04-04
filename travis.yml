@@ -3,24 +3,26 @@ language: python
 python:
     - "3.7"
 
+sudo: false
+
 # [Browsers]
 addons:
-  chrome: stable
-  firefox: stable
+    chrome: stable
+    firefox: stable
 
 # [GUI]
 services:
-  - xvfb
+    - xvfb
 
 # [Installation]
 install:
-  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
-  - source $HOME/.poetry/env
-  - poetry install
+    - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
+    - source $HOME/.poetry/env
+    - poetry install
 
 # [RUN]
 script:
-  - poetry run pytest tests/ --cov=wire
+    - poetry run pytest tests/ --cov=wire
 
 after-script:
-  codecov
+    codecov
