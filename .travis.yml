@@ -8,7 +8,7 @@ sudo: false
 # [Browsers]
 addons:
     chrome: stable
-    firefox: stable
+    firefox: latest
 
 # [GUI]
 services:
