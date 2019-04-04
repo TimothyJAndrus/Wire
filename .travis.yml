@@ -9,10 +9,6 @@ addons:
     chrome: stable
     firefox: latest
 
-# [GUI]
-services:
-    - xvfb
-
 # [Installation]
 install:
     - sudo ./install_chromedriver.sh
