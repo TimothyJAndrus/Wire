@@ -5,11 +5,16 @@
 
 <p align="center">
     <img alt="License: MIT" src="https://img.shields.io/apm/l/vim-mode.svg?style=flat">
-    <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+    <a href="https://github.com/ambv/black">
+        <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
+    </a>
     <img src="https://img.shields.io/pypi/pyversions/perf.svg?style=flat" />
     <img src="https://travis-ci.com/MisterBianco/Wire.svg?branch=master" />
     <a href="https://codecov.io/gh/MisterBianco/Wire">
         <img src="https://codecov.io/gh/MisterBianco/Wire/branch/master/graph/badge.svg" />
+    </a>
+    <a href="https://www.codefactor.io/repository/github/misterbianco/wire">
+        <img src="https://www.codefactor.io/repository/github/misterbianco/wire/badge" alt="CodeFactor" />
     </a>
 </p>
 
