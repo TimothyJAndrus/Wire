@@ -6,7 +6,7 @@ import time
 from functools import wraps
 from inspect import getcomments
 
-from wire.utilities.colors import *
+from wire.utilities.colors import B, Bo, Y
 from wire.utilities.utilities import log
 
 # ---------- External dependencies -------------- #
@@ -68,6 +68,7 @@ def timer(func):
     def wrapped(*args, **kwargs):
         start = time.time_ns()
         result = func(*args, **kwargs)
+        # FIX ME :)
         logger.info("Page Load: " + str((time.time_ns() - start)))
         return result
 
