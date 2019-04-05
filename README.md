@@ -1,7 +1,7 @@
-
-<h1 align="center">
+<img src="assets/facebook_cover_photo_2.png" />
+<!-- <h1 align="center">
     Wire
-</h1>
+</h1> -->
 
 <p align="center">
     <img alt="License: MIT" src="https://img.shields.io/apm/l/vim-mode.svg?style=flat">
