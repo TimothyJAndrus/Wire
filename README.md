@@ -40,16 +40,13 @@ $ poetry run pytest tests/
 
 Simple just define a browser instance
 
-```python3
-with Chrome() as b:
-    b.get("https://google.com")
-```
+<img src="assets/chrome_local.png" />
 
 # Run remote
 
 Also simple :snake:
 
-<img src="assets/chrome.png" />
+<img src="assets/chrome_remote.png" />
 
 ### Install Drivers
 

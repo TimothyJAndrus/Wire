@@ -1,11 +1,12 @@
-import os, sys
+import os
+import sys
 import pytest
 
 import importlib
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from wire.browser import *
+from wire.browser import Chrome, Firefox, Browser
 
 
 def pytest_addoption(parser):
