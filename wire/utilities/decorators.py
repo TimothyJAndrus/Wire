@@ -19,7 +19,7 @@ from colorama import Fore, Style
 #         This is a decorator which can be used to mark functions
 #         as undocumented. It will result in a warning being emitted
 #         when the function is used.
-        
+
 #         @param func : Callable -> Function to wrap
 #         @returns Callable
 #     """

@@ -29,7 +29,8 @@ from __future__ import annotations
 import copy
 import functools
 
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Any
+from types import TracebackType
 
 # LOCAL DEPS
 from wire.core.element import Element
@@ -61,6 +62,8 @@ IDENTIFIERS = {
     ".": By.CLASS_NAME,
     "_": By.CSS_SELECTOR,
 }
+
+# TYPE ALIASES
 
 
 class ToElementConverter(object):
@@ -131,7 +134,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
 
         self.remote = True if remote else False
 
-        if remote: # pragma: no cover
+        if remote:  # pragma: no cover
             webdriver.Remote.__init__(
                 self,
                 desired_capabilities=getattr(
@@ -172,7 +175,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             @param traceback ->
             @returns None
         """
-        if self.remote: # pragma: no cover
+        if self.remote:  # pragma: no cover
             webdriver.remote.quit(self)
         else:
             getattr(webdriver, self.classname).quit(self)
@@ -276,7 +279,16 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
         """
         if valid_url(url):
             log(logger.info, self.classname, func_name(), f"Retrieving: {url}")
-            super(Browser, self).get(url)
+            try:
+                super(Browser, self).get(url)
+            except TimeoutException:  # pragma: no cover
+                log(
+                    logger.warning,
+                    self.classname,
+                    func_name(),
+                    f"{url} raised a timeout exception",
+                )
+                return False
             return True
 
         log(

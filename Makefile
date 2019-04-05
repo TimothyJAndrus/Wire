@@ -5,4 +5,4 @@ init:
     poetry install
 
 test:
-    pytest tests/ --headless -s
+    poetry run pytest tests/ --headless -s -x -n 2
