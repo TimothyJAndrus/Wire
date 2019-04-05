@@ -45,8 +45,6 @@ pytest-xdist = "1.26.1"
 
 codecov = "2.0.15"
 
-doge = "3.5.0"
-
 [tool.poetry.dev-dependencies]
 
 black = { version = "*", allows-prereleases = true }

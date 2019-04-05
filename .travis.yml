@@ -23,7 +23,7 @@ install:
 
 # [RUN]
 script:
-    - poetry run pytest tests/ --cov=wire -x --headless | doge
+    - poetry run pytest tests/ --cov=wire -x --headless
 
 after_success:
   - codecov
