@@ -69,8 +69,9 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             self.options.add_argument("--headless")
             log(logger.info, self.sn, xfunc(), "headless mode")
 
+        self.remote = True if remote else False
+
         if remote:
-            self.remote = True
             webdriver.Remote.__init__(
                 self,
                 desired_capabilities=getattr(
