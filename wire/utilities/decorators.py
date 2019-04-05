@@ -66,11 +66,9 @@ def timer(func):
 
     @wraps(func)
     def wrapped(*args, **kwargs):
-        start = time.process_time()
+        start = time.time_ns()
         result = func(*args, **kwargs)
-        logger.info(
-            "Page Load: " + str((time.process_time() - start))
-        )
+        logger.info("Page Load: " + str((time.time_ns() - start)))
         return result
 
     return wrapped

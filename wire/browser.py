@@ -46,10 +46,9 @@ BY_TYPES = {
     "~": By.TAG_NAME,
 }
 
-# "/usr/local/bin/"+("geckodriver/geckodriver" if self.sn == "Firefox" else "chromedriver/chromedriver"),
 class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
     @typechecked
-    def __init__(self, head: bool = False) -> None:
+    def __init__(self, head: bool = False, remote: str = "") -> None:
         """
             Browser class that acts as the parent wrapper
             to the selenium api. Able to wrap both chrome and firefox
@@ -66,23 +65,29 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             Firefox_Options() if self.sn == "Firefox" else Chrome_Options()
         )
 
-        if head: # pragma: no cover
+        if head:  # pragma: no cover
             self.options.add_argument("--headless")
             log(logger.info, self.sn, xfunc(), "headless mode")
 
-        # if driver_path:
-        #     self.options.binary_location = driver_path
-        # , driver_path : Optional[str] = None
-
-        getattr(webdriver, self.sn).__init__(
-            self,
-            options=self.options,
-            # executable_path=driver_path,
-            desired_capabilities=getattr(DesiredCapabilities, self.sn.upper()),
-        )
-
-        self.set_page_load_timeout(5)
-        self.implicitly_wait(5)
+        if remote:
+            self.remote = True
+            webdriver.Remote.__init__(
+                self,
+                desired_capabilities=getattr(
+                    DesiredCapabilities, self.sn.upper()
+                ),
+                command_executor=remote,
+            )
+        else:
+            getattr(webdriver, self.sn).__init__(
+                self,
+                options=self.options,
+                desired_capabilities=getattr(
+                    DesiredCapabilities, self.sn.upper()
+                ),
+            )
+            self.set_page_load_timeout(5)
+            self.implicitly_wait(5)
 
         log(logger.info, self.sn, xfunc(), "Browser instantiated")
 
@@ -106,7 +111,10 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             @ param traceback ->
             @returns None
         """
-        getattr(webdriver, self.sn).quit(self)
+        if self.remote:
+            webdriver.remote.quit(self)
+        else:
+            getattr(webdriver, self.sn).quit(self)
         log(logger.info, self.sn, xfunc(), "Destroyed browser")
 
     def __str__(self) -> str:
@@ -159,13 +167,14 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
     #     pass
 
     def __wait_for(self, type: By, elem: str, delay: int) -> List[Webelement]:
-        """ A method for explicit waits
+        """
+            A method for explicit waits
 
-        Shouldn't be called directly... necessarily
+            Shouldn't be called directly... necessarily
 
-        Keyword arguments:
-        element -- A webelement to find with an identifier
-        delay   -- Amount of time to wait in seconds
+            Keyword arguments:
+            element -- A webelement to find with an identifier
+            delay   -- Amount of time to wait in seconds
         """
 
         log(
@@ -184,6 +193,11 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
     @timer
     @typechecked
     def get(self, url: str) -> bool:
+        """
+            Function to wrap seleniums get method
+
+            @param url : str
+        """
         if valid_url(url):
             log(logger.info, self.sn, xfunc(), f"Retrieving: {url}")
             super(Browser, self).get(url)
@@ -239,4 +253,3 @@ class Firefox(Browser):
 # Alias
 class Chrome(Browser):
     pass
-

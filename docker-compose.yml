@@ -1,0 +1,30 @@
+version: '3.5'
+services:
+
+  hub:
+    image: selenium/hub:3.10.0
+    ports:
+      - 4444:4444
+    environment:
+        - GRID_BROWSER_TIMEOUT=300
+        - GRID_TIMEOUT=600
+
+  chrome:
+    image: selenium/node-chrome:3.10.0
+    depends_on:
+      - hub
+    environment:
+      - HUB_HOST=hub
+      - NODE_MAX_INSTANCES=1
+      - NODE_MAX_SESSION=1
+      - SE_OPTS=-browserTimeout 360 -timeout 360 -cleanUpCycle 250
+
+  firefox:
+    image: selenium/node-firefox:3.10.0
+    depends_on:
+      - hub
+    environment:
+      - HUB_HOST=hub
+      - NODE_MAX_INSTANCES=1
+      - NODE_MAX_SESSION=1
+      - SE_OPTS=-browserTimeout 360 -timeout 360 -cleanUpCycle 250

@@ -6,8 +6,8 @@ import pytest
 
 from wire.browser import *
 
-class Test_Bad_Browser:
 
+class Test_Bad_Browser:
     @pytest.mark.xfail(raises=ValueError)
     def test_bad(self):
         b = Browser(True)
@@ -17,7 +17,6 @@ class Test_Bad_Browser:
 @pytest.mark.incremental
 @pytest.mark.usefixtures("wiretap")
 class TestDunders:
-
     def test_init(self):
 
         newBrowser = Firefox(True)
@@ -49,12 +48,10 @@ class TestDunders:
         id = self.wire["*//a[@id]"][0].get_attribute("id")
         assert self.wire[f"#{id}"]
 
-
     def test_getitem_name(self):
         self.wire.get("https://google.com")
         name = self.wire["*//input[@name]"][0].get_attribute("name")
         assert self.wire[f"@{name}"]
-
 
     def test_getitem_tag(self):
         self.wire.get("https://google.com")
@@ -73,7 +70,6 @@ class TestDunders:
         self.wire.get("https://google.com")
         assert self.wire["o"]
 
-    # @pytest.mark.xfail()
     def test_getitem_empty(self):
         self.wire.get("https://google.com")
         assert self.wire[""] is None

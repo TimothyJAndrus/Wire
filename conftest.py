@@ -7,6 +7,7 @@ import importlib
 
 from wire.browser import *
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "--headless",
@@ -15,14 +16,17 @@ def pytest_addoption(parser):
         help="Run headless browser",
     )
 
+
 def pytest_generate_tests(metafunc):
     if "browser" in metafunc.fixturenames:
         browsers = ["Firefox", "Chrome"]
         metafunc.parametrize("browser", browsers, scope="session")
 
+
 @pytest.fixture(scope="session")
 def headless(request):
     return request.config.getoption("--headless")
+
 
 @pytest.fixture(scope="class")
 def wiretap(request, browser, headless):
@@ -30,6 +34,7 @@ def wiretap(request, browser, headless):
         if request.cls is not None:
             request.cls.wire = Wire
         yield Wire
+
 
 def pytest_runtest_makereport(item, call):
     if "incremental" in item.keywords:

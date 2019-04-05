@@ -1,5 +1,7 @@
 
-<h1 align="center">Wire</h1>
+<h1 align="center">
+    Wire
+</h1>
 
 <p align="center">
     <img alt="License: MIT" src="https://img.shields.io/apm/l/vim-mode.svg?style=flat">
@@ -28,6 +30,21 @@ $ poetry run pytest tests/
 ```
 
 ---
+
+# Run locally
+
+Simple just define a browser instance
+
+```python3
+with Chrome() as b:
+    b.get("https://google.com")
+```
+
+# Run remote
+
+Also simple :snake:
+
+<img src="assets/chrome.png" />
 
 ### Install Drivers
 
