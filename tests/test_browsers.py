@@ -6,100 +6,94 @@ import pytest
 
 from wire.core.browser import Chrome, Firefox, Browser
 
+def test_init():
+    newBrowser = Firefox(True)
+    del newBrowser
 
-class Test_Bad_Browser:
-    @pytest.mark.xfail(raises=ValueError)
-    def test_bad(self):
+    newBrowser = Chrome(True)
+    del newBrowser
+
+def test_call(wiretap):
+    wiretap("https://google.com")
+    assert wiretap.url == "https://www.google.com/"
+
+def test_str(wiretap):
+    assert str(wiretap) in ["Firefox", "Chrome"]
+
+def test_repr(wiretap):
+    assert repr(wiretap) in ["Firefox", "Chrome"]
+
+def test_context(wiretap):
+    with Chrome(True) as _:
+        assert True
+    with Firefox(True) as _:
+        assert True
+
+def test_getitem_class(wiretap):
+    wiretap.get("https://google.com")
+    classx = wiretap["*//a[@class]"][0].get_attribute("class")
+    assert wiretap[f".{classx}"]
+
+def test_getitem_id(wiretap):
+    wiretap.get("https://google.com")
+    xid = wiretap["*//a[@id]"][0].get_attribute("id")
+    assert wiretap[f"#{xid}"]
+
+def test_getitem_name(wiretap):
+    wiretap.get("https://google.com")
+    name = wiretap["*//input[@name]"][0].get_attribute("name")
+    assert wiretap[f"@{name}"]
+
+def test_getitem_tag(wiretap):
+    wiretap.get("https://google.com")
+    assert wiretap["~div"]
+
+def test_getitem_xpath(wiretap):
+    wiretap.get("https://google.com")
+    assert wiretap[f"*//input[@name]"]
+
+def test_getitem_css(wiretap):
+    wiretap.get("https://google.com")
+    assert wiretap[f"_#viewport"]
+
+def test_getitem_missing_identifier(wiretap):
+    wiretap.get("https://google.com")
+    with pytest.raises(ValueError) as e_info:
+        assert wiretap["o"]
+
+def test_getitem_empty(wiretap):
+    wiretap.get("https://google.com")
+    with pytest.raises(IndexError) as e_info:
+        assert wiretap[""] is None
+
+def test_getitem_bad_type(wiretap):
+    wiretap.get("https://google.com")
+    with pytest.raises(TypeError) as e_info:
+        assert wiretap[1] is None
+
+def test_getitem_nonexistent(wiretap):
+    assert wiretap[".lkjsdlfjklsajfd"] is None
+
+def test_get(wiretap):
+    wiretap.get("https://google.com")
+    assert wiretap.url == "https://www.google.com/"
+
+def test_bad_get(wiretap):
+    with pytest.raises(AssertionError) as e_info:
+        assert wiretap.get("lasjfkjoiewjfnjonodsangl")
+
+def test_links(wiretap):
+    wiretap.get("https://google.com")
+    assert wiretap.links
+
+def test_source(wiretap):
+    wiretap.get("https://google.com")
+    assert wiretap.source
+
+def test_bad():
+    with pytest.raises(ValueError) as e_info:
         b = Browser(True)
 
 
-@pytest.mark.smoke
-@pytest.mark.incremental
-@pytest.mark.usefixtures("wiretap")
-class TestDunders:
-    def test_init(self):
-
-        newBrowser = Firefox(True)
-        del newBrowser
-
-        newBrowser = Chrome(True)
-        del newBrowser
-
-    def test_call(self):
-        self.wire("https://google.com")
-        assert self.wire.url == "https://www.google.com/"
-
-    def test_str(self):
-        assert str(self.wire) in ["Firefox", "Chrome"]
-
-    def test_repr(self):
-        assert repr(self.wire) in ["Firefox", "Chrome"]
-
-    def test_context(self):
-        with Chrome(True) as _:
-            assert True
-
-        with Firefox(True) as _:
-            assert True
-
-    def test_getitem_class(self):
-        self.wire.get("https://google.com")
-        classx = self.wire["*//a[@class]"][0].get_attribute("class")
-        assert self.wire[f".{classx}"]
-
-    def test_getitem_id(self):
-        self.wire.get("https://google.com")
-        xid = self.wire["*//a[@id]"][0].get_attribute("id")
-        assert self.wire[f"#{xid}"]
-
-    def test_getitem_name(self):
-        self.wire.get("https://google.com")
-        name = self.wire["*//input[@name]"][0].get_attribute("name")
-        assert self.wire[f"@{name}"]
-
-    def test_getitem_tag(self):
-        self.wire.get("https://google.com")
-        assert self.wire["~div"]
-
-    def test_getitem_xpath(self):
-        self.wire.get("https://google.com")
-        assert self.wire[f"*//input[@name]"]
-
-    def test_getitem_css(self):
-        self.wire.get("https://google.com")
-        assert self.wire[f"_#viewport"]
-
-    @pytest.mark.xfail(raises=ValueError)
-    def test_getitem_missing_identifier(self):
-        self.wire.get("https://google.com")
-        assert self.wire["o"]
-
-    def test_getitem_empty(self):
-        self.wire.get("https://google.com")
-        assert self.wire[""] is None
-
-    @pytest.mark.xfail(raises=TypeError)
-    def test_getitem_bad_type(self):
-        self.wire.get("https://google.com")
-        assert self.wire[1] is None
-
-    def test_getitem_nonexistent(self):
-        assert self.wire[".lkjsdlfjklsajfd"] is None
-
-    def test_get(self):
-        self.wire.get("https://google.com")
-        assert self.wire.url == "https://www.google.com/"
-
-    @pytest.mark.xfail(raises=AssertionError)
-    def test_bad_get(self):
-        assert self.wire.get("lasjfkjoiewjfnjonodsangl")
-
-    def test_links(self):
-        assert self.wire.links
-
-    def test_source(self):
-        assert self.wire.source
-
-    def test_display_source(self):
-        self.wire.get("https://google.com")
-        self.wire.print_source()
+# @pytest.mark.smoke
+# @pytest.mark.incremental

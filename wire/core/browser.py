@@ -34,7 +34,7 @@ from typing import Callable, List, Optional
 # LOCAL DEPS
 from wire.core.element import Element
 from wire.utilities.helpers import valid_url, log, func_name
-from wire.utilities.decorators import timer, undocumented
+from wire.utilities.decorators import timer
 
 # EXTERNAL DEPS
 from loguru import logger
@@ -73,7 +73,9 @@ class ToElementConverter(object):
         @functools.wraps(func)
         def __wrapper(driver: Browser, *args, **kwargs) -> List[Element]:
             result = func(driver, *args, **kwargs)
-            return self.conversion(driver, result)
+            if result is not None:
+                return self.conversion(driver, result)
+            return None
 
         return __wrapper
 
@@ -129,7 +131,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
 
         self.remote = True if remote else False
 
-        if remote:
+        if remote: # pragma: no cover
             webdriver.Remote.__init__(
                 self,
                 desired_capabilities=getattr(
@@ -145,7 +147,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
                     DesiredCapabilities, self.classname.upper()
                 ),
             )
-            self.set_page_load_timeout(5)
+            self.set_page_load_timeout(15)
             self.implicitly_wait(5)
 
         log(logger.info, self.classname, func_name(), "Browser instantiated")
@@ -170,7 +172,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             @param traceback ->
             @returns None
         """
-        if self.remote:
+        if self.remote: # pragma: no cover
             webdriver.remote.quit(self)
         else:
             getattr(webdriver, self.classname).quit(self)

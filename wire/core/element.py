@@ -47,7 +47,3 @@ class Element(WebElement):
     # Removing this will cause strange errors to we leave it :)
     def __init__(self, webelement: WebElement):
         pass
-
-    @property
-    def test(self):
-        return "pewpew"
