@@ -1,6 +1,5 @@
-<p align="center">
-    <h1>Wire</h1>
-</p>
+
+<h1 align="center">Wire</h1>
 
 <p align="center">
     <img alt="License: MIT" src="https://img.shields.io/apm/l/vim-mode.svg?style=flat">

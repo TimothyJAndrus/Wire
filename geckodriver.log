@@ -1787,3 +1787,11 @@ console.error: BroadcastService:
 JavaScript error: resource://gre/modules/Sqlite.jsm, line 834: Error: Connection is not open.
 1554424215498	Marionette	INFO	Stopped listening on port 56939
 1554424220683	Marionette	INFO	Stopped listening on port 56949
+console.error: BroadcastService: 
+  receivedBroadcastMessage: handler for
+  remote-settings/monitor_changes
+  threw error:
+  Message: Error: Polling for changes failed: NetworkError when attempting to fetch resource..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:190:13
+
