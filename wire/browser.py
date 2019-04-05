@@ -29,7 +29,6 @@ from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-# TODO:
 """
     assert catching decorator
     __enter__ exception handler for strings and crap
@@ -45,6 +44,7 @@ BY_TYPES = {
     "@": By.NAME,
     "~": By.TAG_NAME,
 }
+
 
 class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
     @typechecked
@@ -100,7 +100,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
         return self
 
     def __exit__(
-        self, type: Any, value: Any, traceback: Optional[TracebackType]
+        self, typex: Any, value: Any, traceback: Optional[TracebackType]
     ) -> None:
         """
             Exit dunder for the closing of both the object
@@ -149,12 +149,12 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             ~   -- tag name
         """
         try:
-            type = BY_TYPES[elem[0]]
+            typex = BY_TYPES[elem[0]]
         except KeyError:
             raise ValueError("Missing valid identifier")
 
         try:
-            return self.__wait_for(type, elem, delay)
+            return self.__wait_for(typex, elem, delay)
         except TimeoutException:
             return None
 
@@ -166,7 +166,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
     #     # Function for waiting on 1 of many conditions
     #     pass
 
-    def __wait_for(self, type: By, elem: str, delay: int) -> List[Webelement]:
+    def __wait_for(self, typex: By, elem: str, delay: int) -> List[Webelement]:
         """
             A method for explicit waits
 
@@ -181,14 +181,14 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             logger.info,
             self.sn,
             xfunc(),
-            f"Waiting on element: [{type}] -> {elem[1:]}",
+            f"Waiting on element: [{typex}] -> {elem[1:]}",
         )
 
         WebDriverWait(self, delay).until(
-            EC.presence_of_element_located((type, elem[1:]))
+            EC.presence_of_element_located((typex, elem[1:]))
         )
 
-        return self.find_elements(type, elem[1:])
+        return self.find_elements(typex, elem[1:])
 
     @timer
     @typechecked
