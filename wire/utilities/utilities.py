@@ -7,7 +7,7 @@ from sys import stdout
 from inspect import stack
 
 # Local dependencies
-from wire.utilities.colors import E, BO, B, Y
+from wire.utilities.colors import E, Bo, B, Y
 
 # External dependencies
 from loguru import logger

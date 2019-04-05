@@ -7,7 +7,7 @@ from types import TracebackType
 from typing import Optional, Any, Union, List, Dict
 
 # --------- Local dependencies ------------------ #
-from wire.utilities.colors import E, BO, B, Y
+from wire.utilities.colors import E, Bo, B, Y
 from wire.utilities.utilities import log, xfunc, valid_url
 from wire.utilities.decorators import timer
 
