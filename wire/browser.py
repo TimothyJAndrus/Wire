@@ -29,12 +29,6 @@ from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-"""
-    assert catching decorator
-    __enter__ exception handler for strings and crap
-    Plugins
-    split library into more files :)
-"""
 
 BY_TYPES = {
     ".": By.CLASS_NAME,
