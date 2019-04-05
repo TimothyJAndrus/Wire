@@ -6,6 +6,13 @@ import pytest
 
 from wire.browser import *
 
+class Test_Bad_Browser:
+
+    @pytest.mark.xfail(raises=ValueError)
+    def test_bad(self):
+        b = Browser(True)
+
+
 @pytest.mark.smoke
 @pytest.mark.incremental
 @pytest.mark.usefixtures("wiretap")
@@ -76,9 +83,12 @@ class TestDunders:
         self.wire.get("https://google.com")
         assert self.wire[1] is None
 
+    def test_getitem_nonexistent(self):
+        assert self.wire[".lkjsdlfjklsajfd"] is None
+
     def test_get(self):
         self.wire.get("https://google.com")
-        assert self.wire.url == "https://www.google.com"
+        assert self.wire.url == "https://www.google.com/"
 
     @pytest.mark.xfail(raises=AssertionError)
     def test_bad_get(self):
