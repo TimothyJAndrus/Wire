@@ -3,11 +3,8 @@ repos:
     rev: stable
     hooks:
     - id: black
-      default_language_version:
-            python: python3.7
+      default_stages: [commit, push]
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v1.2.3
     hooks:
     - id: flake8
-      default_language_version:
-            python: python3.7
