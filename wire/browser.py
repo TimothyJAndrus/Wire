@@ -66,7 +66,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             Firefox_Options() if self.sn == "Firefox" else Chrome_Options()
         )
 
-        if head:
+        if head: # pragma: no cover
             self.options.add_argument("--headless")
             log(logger.info, self.sn, xfunc(), "headless mode")
 
