@@ -45,8 +45,8 @@ class TestDunders:
 
     def test_getitem_id(self):
         self.wire.get("https://google.com")
-        id = self.wire["*//a[@id]"][0].get_attribute("id")
-        assert self.wire[f"#{id}"]
+        xid = self.wire["*//a[@id]"][0].get_attribute("id")
+        assert self.wire[f"#{xid}"]
 
     def test_getitem_name(self):
         self.wire.get("https://google.com")
