@@ -13,3 +13,4 @@ TODO:
 - parsing and pretty printing html
 - Proxies
 - Webelement wrapper
+- Add getitem examples to readme :)
