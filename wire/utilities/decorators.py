@@ -2,69 +2,53 @@
 # -*- coding: utf-8 -*-
 
 import time
+import functools
 
-from functools import wraps
-from inspect import getcomments
+from typing import Callable
 
-from wire.utilities.colors import B, Bo, Y
-from wire.utilities.utilities import log
+# LOCAL DEPS
+from wire.utilities.helpers import log
 
 # ---------- External dependencies -------------- #
 from loguru import logger
+from colorama import Fore, Style
 
 
-# def logdoc(func):
-#     """"""
+def undocumented(func: Callable) -> Callable:
+    """
+        This is a decorator which can be used to mark functions
+        as undocumented. It will result in a warning being emitted
+        when the function is used.
+        
+        @param func : Callable -> Function to wrap
+        @returns Callable
+    """
 
-#     @wraps(func)
-#     def wrapped(*args, **kwargs):
-#         fname = func.__qualname__.split(".")
-#         if len(fname) == 2:
-#             log(
-#                 logger.info,
-#                 fname[0],
-#                 fname[1],
-#                 getcomments(func).strip().replace("#", ""),
-#             )
+    @functools.wraps(func)
+    def __wrapped(*args, **kwargs):
+        fname = func.__qualname__.split(".")
+        if len(fname) == 2:
+            log(logger.warning, fname[0], fname[1], f"{Bo}{Y}Undocumented{E}")
+        else:
+            mname = func.__globals__["__file__"].split(".")
+            log(logger.warning, mname[0], fname[0], f"{Bo}{Y}Undocumented{E}")
+        return func(*args, **kwargs)
 
-#         else:
-#             mname = func.__globals__["__file__"].split(".")
-#             log(
-#                 logger.info,
-#                 mname[0],
-#                 fname[0],
-#                 getcomments(func).strip().replace("#", ""),
-#             )
-#         return func(*args, **kwargs)
-
-#     return wrapped
+    return __wrapped
 
 
-# def undocumented(func):
-#     """This is a decorator which can be used to mark functions
-#     as undocumented. It will result in a warning being emitted
-#     when the function is used."""
+def timer(func: Callable) -> Callable:
+    """
+        This is a decorator which can be used to mark functions
+        with a timer. It will result in a timer being started when the
+        function is called and will output the time taken at the return
+        of the function.
 
-#     @wraps(func)
-#     def wrapped(*args, **kwargs):
-#         fname = func.__qualname__.split(".")
-#         if len(fname) == 2:
-#             log(logger.warning, fname[0], fname[1], f"{Bo}{Y}Undocumented{E}")
-#         else:
-#             mname = func.__globals__["__file__"].split(".")
-#             log(logger.warning, mname[0], fname[0], f"{Bo}{Y}Undocumented{E}")
-#         return func(*args, **kwargs)
+        @param func : Callable -> Funciton to wrap
+        @returns Callable    
+    """
 
-#     return wrapped
-
-
-def timer(func):
-    """This is a decorator which can be used to mark functions
-    with a timer. It will result in a timer being started when the
-    function is called and will output the time taken at the return
-    of the function."""
-
-    @wraps(func)
+    @functools.wraps(func)
     def wrapped(*args, **kwargs):
         start = time.time_ns()
         result = func(*args, **kwargs)
@@ -74,25 +58,6 @@ def timer(func):
 
     return wrapped
 
-
-# class assert_raises(object):
-#     # based on pytest and unittest.TestCase
-#     def __init__(self, type):
-#         self.type = type
-
-#     def __enter__(self):
-#         pass
-
-#     def __exit__(self, type, value, traceback):
-#         if type is None:
-#             raise AssertionError("exception expected")
-#         if issubclass(type, self.type):
-#             return True  # swallow the expected exception
-#         raise AssertionError("wrong exception type")
-
-
-# with assert_raises(KeyError):
-#     {}['foo']
 
 # class WordProcessor(object):
 #     PLUGINS = []

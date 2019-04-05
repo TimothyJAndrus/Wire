@@ -4,7 +4,7 @@
 import os
 import pytest
 
-from wire.browser import Chrome, Firefox, Browser
+from wire.core.browser import Chrome, Firefox, Browser
 
 
 class Test_Bad_Browser:

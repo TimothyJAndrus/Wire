@@ -2,11 +2,9 @@ import os
 import sys
 import pytest
 
-import importlib
-
 # sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from wire.browser import Chrome, Firefox, Browser
+from wire.core.browser import Chrome, Firefox, Browser
 
 
 def pytest_addoption(parser):
@@ -31,7 +29,7 @@ def headless(request):
 
 @pytest.fixture(scope="class")
 def wiretap(request, browser, headless):
-    with globals()[browser](head=headless) as Wire:
+    with globals()[browser](headless=headless) as Wire:
         if request.cls is not None:
             request.cls.wire = Wire
         yield Wire
