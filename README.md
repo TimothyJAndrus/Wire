@@ -16,6 +16,7 @@
     <a href="https://www.codefactor.io/repository/github/misterbianco/wire">
         <img src="https://www.codefactor.io/repository/github/misterbianco/wire/badge" alt="CodeFactor" />
     </a>
+    <img src="https://img.shields.io/badge/Dependabot-enabled-blue.svg" />
 </p>
 
 Wire is a python wrapper around selenium to make writing web tests easier and safer.
