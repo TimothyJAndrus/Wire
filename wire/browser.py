@@ -46,7 +46,7 @@ BY_TYPES = {
     "~": By.TAG_NAME,
 }
 
-
+# "/usr/local/bin/"+("geckodriver/geckodriver" if self.sn == "Firefox" else "chromedriver/chromedriver"),
 class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
     @typechecked
     def __init__(self, head: bool = False) -> None:
@@ -70,10 +70,14 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             self.options.add_argument("--headless")
             log(logger.info, self.sn, xfunc(), "headless mode")
 
+        # if driver_path:
+        #     self.options.binary_location = driver_path
+        # , driver_path : Optional[str] = None
+
         getattr(webdriver, self.sn).__init__(
             self,
             options=self.options,
-            executable_path="/usr/local/bin/"+("geckodriver/geckodriver" if self.sn == "Firefox" else "chromedriver/chromedriver"),
+            # executable_path=driver_path,
             desired_capabilities=getattr(DesiredCapabilities, self.sn.upper()),
         )
 
