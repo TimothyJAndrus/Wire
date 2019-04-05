@@ -25,6 +25,10 @@ class TestDunders:
         newBrowser = Chrome(True)
         del newBrowser
 
+    def test_call(self):
+        self.wire("https://google.com")
+        assert self.wire.url == "https://www.google.com/"
+
     def test_str(self):
         assert str(self.wire) in ["Firefox", "Chrome"]
 
@@ -95,3 +99,7 @@ class TestDunders:
 
     def test_source(self):
         assert self.wire.source
+
+    def test_display_source(self):
+        self.wire.get("https://google.com")
+        self.wire.print_source()

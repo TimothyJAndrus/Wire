@@ -11,8 +11,13 @@ from wire.utilities.colors import E, Bo, B, Y
 
 # External dependencies
 from loguru import logger
-
 from typeguard import typechecked
+
+from bs4 import BeautifulSoup
+
+from pygments import highlight
+from pygments.lexers.html import HtmlLexer
+from pygments.formatters import TerminalFormatter
 
 # -----------------------------------------------+---+---+
 #      Dont mind me here                         | _ | X |
@@ -41,14 +46,16 @@ URL_REGEX = re.compile(
 )
 
 
-def log(channel, mname, fname, message):
-    channel(f"{Bo}{B}{mname}{E}:{Bo}{B}{fname}{E} 〉 {message}")
-
-
 @typechecked
 def valid_url(url: str) -> bool:
     return True if re.match(URL_REGEX, url) else False
 
+
+def log(channel, mname, fname, message):
+    channel(f"{Bo}{B}{mname}{E}:{Bo}{B}{fname}{E} 〉 {message}")
+
+def pprint(html : str):
+    print(highlight(BeautifulSoup(html).prettify(), HtmlLexer(), TerminalFormatter()))
 
 def xfunc() -> str:
     """ This allows subclasses to get the name of

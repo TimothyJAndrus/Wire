@@ -3,13 +3,16 @@
 
 from __future__ import annotations
 
+import copy
+from functools import wraps
 from types import TracebackType
 from typing import Optional, Any, Union, List, Dict
 
 # --------- Local dependencies ------------------ #
 from wire.utilities.colors import E, Bo, B, Y
-from wire.utilities.utilities import log, xfunc, valid_url
+from wire.utilities.utilities import log, xfunc, valid_url, pprint
 from wire.utilities.decorators import timer
+from wire.elements import Element
 
 # ---------- External dependencies -------------- #
 from loguru import logger
@@ -21,6 +24,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.firefox.webelement import FirefoxWebElement
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
@@ -38,6 +42,40 @@ BY_TYPES = {
     "@": By.NAME,
     "~": By.TAG_NAME,
 }
+
+
+class ConvertToElementWrapper(object):
+    def __call__(self, f):
+        @wraps(f)
+        def wrapper(driver_self, *args, **kwds):
+            res = f(driver_self, *args, **kwds)
+            res = self._convert_result(driver_self, res)
+            return res
+        return wrapper
+
+    @classmethod
+    def _convert_result(cls, driver, res):
+        for index, item in enumerate(res):
+            res[index] = cls._convert_into_elementwrapper(item)
+        return res
+
+    @classmethod
+    def _convert_into_elementwrapper(cls, webelement):
+        return cls._make_instance(Element, webelement)
+
+    @classmethod
+    def _make_instance(cls, element_class, webelement):
+        """
+        Firefox uses another implementation of element. This method
+        switch base of wrapped element to firefox one.
+        """
+        if isinstance(webelement, WebElement):
+            element_class = copy.deepcopy(element_class)
+            element_class.__bases__ = tuple(
+                FirefoxWebElement if base is WebElement else base
+                for base in element_class.__bases__
+            )
+        return element_class(webelement)
 
 
 class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
@@ -118,7 +156,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
 
             @returns string
         """
-        return self.sn
+        return self.sn + (" remote" if self.remote else "")
 
     def __repr__(self) -> str:
         """
@@ -129,6 +167,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
         return self.__str__()
 
     @typechecked
+    @ConvertToElementWrapper()
     def __getitem__(
         self, elem: str, delay: int = 5
     ) -> Optional[Union[List, WebElement]]:
@@ -152,6 +191,10 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             return self.__wait_for(typex, elem, delay)
         except TimeoutException:
             return None
+
+    @typechecked
+    def __call__(self, url : str):
+        self.get(url)
 
     ###########################################################
     ### END DUNDER ############################################
@@ -200,6 +243,13 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
 
         log(logger.warning, self.sn, xfunc(), f"{url} is not a valid url")
         return False
+
+    @typechecked
+    def print_source(self, element : Optional[WebElement]):
+        if element:
+            pprint(element)
+        else:
+            pprint(self.source)
 
     #########################################################
     #### Props  #############################################
