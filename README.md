@@ -4,6 +4,7 @@
     <img alt="License: MIT" src="https://img.shields.io/apm/l/vim-mode.svg?style=flat">
     <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
     <img src="https://img.shields.io/pypi/pyversions/perf.svg?style=flat" />
+    <img src="https://travis-ci.com/MisterBianco/Wire.svg?branch=master" />
 </p>
 
 Wire is a python wrapper around selenium to make writing web tests easier and safer.
