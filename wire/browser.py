@@ -33,7 +33,8 @@ from typing import Callable, List, Optional, Any
 from types import TracebackType
 
 # LOCAL DEPS
-from wire.core.element import Element
+from wire.page import Page
+from wire.element import Element
 from wire.utilities.helpers import valid_url, log, func_name
 from wire.utilities.decorators import timer
 

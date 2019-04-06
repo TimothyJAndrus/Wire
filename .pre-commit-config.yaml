@@ -3,6 +3,12 @@ repos:
     rev: stable
     hooks:
     - id: black
+      name: black
+      entry: black
+      language: python
+      language_version: python3
+      types: [python]
+      
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v1.2.3
     hooks:

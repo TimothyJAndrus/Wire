@@ -4,7 +4,7 @@
 import os
 import pytest
 
-from wire.core.browser import Chrome, Firefox, Browser
+from wire.browser import Chrome, Firefox, Browser
 
 
 def test_init():
@@ -97,7 +97,7 @@ def test_get(wiretap):
 
 def test_bad_get(wiretap):
     with pytest.raises(AssertionError):
-        assert wiretap.get("lasjfkjoiewjfnjonodsangl")
+        assert wiretap.get("lasjfkjoiewjfnjonodsangl") is None
 
 
 def test_links(wiretap):
