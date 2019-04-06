@@ -4,10 +4,10 @@
 import os
 import pytest
 
-from wire.page import Page
+import wire
 
 
-class LoginPage(Page):
+class LoginPage(wire.Page):
 
     url = "https://google.com"
 

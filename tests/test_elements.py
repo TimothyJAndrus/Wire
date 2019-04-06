@@ -4,7 +4,7 @@
 import os
 import pytest
 
-from wire.browser import Chrome, Firefox, Browser
+import wire
 
 
 def test_element(wiretap):

@@ -8,16 +8,3 @@ repos:
       language: python
       language_version: python3
       types: [python]
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v1.2.3
-    hooks:
-    - id: flake8
-      name: flaker
--   repo: local
-    hooks:
-      - id: tests
-        name: run tests
-        entry: poetry run pytest tests/ -vvv -n 2
-        language: system
-        types: [python]
-        stages: [push]

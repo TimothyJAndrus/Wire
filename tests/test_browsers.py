@@ -4,14 +4,15 @@
 import os
 import pytest
 
-from wire.browser import Chrome, Firefox, Browser
+import wire
+from wire.browser import Browser
 
 
 def test_init():
-    newBrowser = Firefox(True)
+    newBrowser = wire.Firefox(True)
     del newBrowser
 
-    newBrowser = Chrome(True)
+    newBrowser = wire.Chrome(True)
     del newBrowser
 
 
@@ -29,9 +30,9 @@ def test_repr(wiretap):
 
 
 def test_context(wiretap):
-    with Chrome(True) as _:
+    with wire.Chrome(True) as _:
         assert True
-    with Firefox(True) as _:
+    with wire.Firefox(True) as _:
         assert True
 
 

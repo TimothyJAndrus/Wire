@@ -28,8 +28,9 @@ def timer(func: Callable) -> Callable:
     def wrapped(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)
-        # FIX ME :)
-        logger.info("Page Load: " + str((time.time() - start)))
+        logger.info(
+            "Page Load: " + str(round(time.time() - start, 2)) + " secs"
+        )
         return result
 
     return wrapped

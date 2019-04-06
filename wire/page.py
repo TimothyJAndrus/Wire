@@ -36,6 +36,7 @@ class PageMeta(type):
 class Page(object, metaclass=PageMeta):
 
     url = ""
+    elements = {}
 
     def __init__(self, driver) -> None:
         """
@@ -43,8 +44,25 @@ class Page(object, metaclass=PageMeta):
 
             @param driver : Browser -> the driver object to use
         """
-        self.driver = driver
-        self.driver.get(self.url)
+        self._driver = driver
+        self._driver.get(self.url)
+
+        for key, value in self.elements.items():
+            if isinstance(value, list):
+                index = 0 if len(value) > 1 else value[1]
+                value = value[0]
+            else:
+                index = 0
+                value = value
+
+            elements = self.__getitem__(value)
+            if elements:
+                setattr(self, key, elements[index])
+            else:
+                pass  # What to do if none is returned
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.url})"
+
+    def __getitem__(self, identifier: str):
+        return self._driver[identifier]
