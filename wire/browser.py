@@ -25,81 +25,32 @@ SOFTWARE.
 
 from __future__ import annotations
 
-# STD LIB imports
-import copy
-import functools
-
-from typing import Callable, List, Optional, Any
 from types import TracebackType
+from typing import Any, List, Optional
 
-# LOCAL DEPS
-from wire.page import Page
-from wire.element import Element
-from wire.utilities.helpers import valid_url, log, func_name
-from wire.utilities.decorators import timer
-
-# EXTERNAL DEPS
+# External deps
 from loguru import logger
 from typeguard import typechecked
 
-# SELENIUM DEPS
+# LOCAL DEPS
+from wire.element import Element, ToElementConverter
+
+from wire.utilities.decorators import timer
+from wire.utilities.constants import IDENTIFIERS
+from wire.utilities.helpers import log, valid_url, func_name
+
+# Selenium libs
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.firefox.webelement import FirefoxWebElement
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.webelement import FirefoxWebElement
 from selenium.webdriver.chrome.options import Options as Chrome_Options
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
-# Dictionary of identifiers to their respective locators
-IDENTIFIERS = {
-    "#": By.ID,
-    "@": By.NAME,
-    "*": By.XPATH,
-    "~": By.TAG_NAME,
-    ".": By.CLASS_NAME,
-    "_": By.CSS_SELECTOR,
-}
-
-# TYPE ALIASES
-
-
-class ToElementConverter(object):
-    """
-        Class used for decorating methods in the Browser class to 
-        return a custom WebElement type
-    """
-
-    def __call__(self, func: Callable) -> Callable:
-        @functools.wraps(func)
-        def __wrapper(driver: Browser, *args, **kwargs) -> List[Element]:
-            result = func(driver, *args, **kwargs)
-            if result is not None:
-                return self.conversion(driver, result)
-            return None
-
-        return __wrapper
-
-    @classmethod
-    def conversion(
-        cls, driver: Browser, elements: List[WebElement]
-    ) -> List[Element]:
-        for index, element in enumerate(elements):
-            elements[index] = cls.convert(element)
-        return elements
-
-    @classmethod
-    def convert(cls, webelement: WebElement) -> Element:
-        if isinstance(webelement, WebElement):
-            element_class = copy.deepcopy(Element)
-            element_class.__bases__ = tuple(
-                FirefoxWebElement if base is WebElement else base
-                for base in Element.__bases__
-            )
-        return Element(webelement)
 
 
 class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):

@@ -28,10 +28,6 @@ from __future__ import annotations
 
 class PageMeta(type):
     def __new__(cls, name, bases, namespace):
-        # print(cls)
-        # print(name)
-        # print(bases)
-        # print(namespace)
         if "url" not in namespace:  # pragma: no cover
             raise ValueError("Class is missing its url param")
         return super().__new__(cls, name, bases, namespace)

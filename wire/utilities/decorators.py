@@ -7,11 +7,32 @@ import functools
 from typing import Callable
 
 # LOCAL DEPS
-from wire.utilities.helpers import log
 
 # ---------- External dependencies -------------- #
 from loguru import logger
-from colorama import Fore, Style
+from typeguard import typechecked
+
+
+def timer(func: Callable) -> Callable:
+    """
+        This is a decorator which can be used to mark functions
+        with a timer. It will result in a timer being started when the
+        function is called and will output the time taken at the return
+        of the function.
+
+        @param func : Callable -> Funciton to wrap
+        @returns Callable    
+    """
+
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        # FIX ME :)
+        logger.info("Page Load: " + str((time.time() - start)))
+        return result
+
+    return wrapped
 
 
 # def undocumented(func: Callable) -> Callable:
@@ -35,29 +56,6 @@ from colorama import Fore, Style
 #         return func(*args, **kwargs)
 
 #     return __wrapped
-
-
-def timer(func: Callable) -> Callable:
-    """
-        This is a decorator which can be used to mark functions
-        with a timer. It will result in a timer being started when the
-        function is called and will output the time taken at the return
-        of the function.
-
-        @param func : Callable -> Funciton to wrap
-        @returns Callable    
-    """
-
-    @functools.wraps(func)
-    def wrapped(*args, **kwargs):
-        start = time.time_ns()
-        result = func(*args, **kwargs)
-        # FIX ME :)
-        logger.info("Page Load: " + str((time.time_ns() - start)))
-        return result
-
-    return wrapped
-
 
 # class WordProcessor(object):
 #     PLUGINS = []
