@@ -6,6 +6,7 @@ import pytest
 
 import wire
 from wire.browser import Browser
+from wire.exceptions import *
 
 
 def test_init():
@@ -97,7 +98,7 @@ def test_get(wiretap):
 
 
 def test_bad_get(wiretap):
-    with pytest.raises(AssertionError):
+    with pytest.raises(InvalidURLException):
         assert wiretap.get("lasjfkjoiewjfnjonodsangl") is None
 
 
@@ -112,7 +113,7 @@ def test_source(wiretap):
 
 
 def test_bad():
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidBrowserException):
         b = Browser(True)
         b.reload()
 

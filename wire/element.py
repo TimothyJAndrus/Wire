@@ -29,14 +29,11 @@ from __future__ import annotations
 import copy
 import functools
 
-from typing import List, Callable, Optional
-
-from loguru import logger
-from typeguard import typechecked
+from typing import Callable
 
 # LOCAL DEPS
-from wire.utilities.constants import IDENTIFIERS
-from wire.utilities.helpers import log, func_name
+from wire.helpers import identifiers
+from wire.helpers import getelement
 
 # ---------- External dependencies -------------- #
 from selenium.webdriver.support.ui import WebDriverWait
@@ -54,7 +51,7 @@ class ToElementConverter(object):
 
     def __call__(self, func: Callable) -> Callable:
         @functools.wraps(func)
-        def __wrapper(driver, *args, **kwargs) -> List[Element]:
+        def __wrapper(driver, *args, **kwargs):
             result = func(driver, *args, **kwargs)
             if result is not None:
                 return self.conversion(driver, result)
@@ -63,7 +60,7 @@ class ToElementConverter(object):
         return __wrapper
 
     @classmethod
-    def conversion(cls, driver, elements: List[WebElement]) -> List[Element]:
+    def conversion(cls, driver, elements):
         for index, element in enumerate(elements):
             elements[index] = cls.convert(element)
         return elements
@@ -90,52 +87,9 @@ class Element(WebElement):
     def __init__(self, webelement: WebElement):
         pass
 
-    @typechecked
-    @ToElementConverter()
-    def __getitem__(
-        self, elem: str, delay: int = 5
-    ) -> Optional[List[Element]]:
-        """ 
-            JQuery-esque element finding function
-
-            Keyword arguments:
-            element -- the element to find given an identifier
-                .   -- class
-                #   -- id
-                _   -- css
-                *   -- xpath
-                @   -- name
-                ~   -- tag name
-
-            @param elem: str -> The string to identify the element
-            @param delay: int -> The time to wait for the element to show
-            @returns List of Elements
-        """
-        try:
-            typex = IDENTIFIERS[elem[0]]
-        except KeyError:
-            raise ValueError("Missing valid identifier")
-
-        try:
-            log(
-                logger.info,
-                self.classname,
-                func_name(),
-                f"Waiting on element: [{typex}] -> {elem[1:]}",
-            )
-
-            WebDriverWait(self, delay).until(
-                EC.presence_of_element_located((typex, elem[1:]))
-            )
-
-            return self.find_elements(typex, elem[1:])
-        except TimeoutException:
-            return None
+    def __getitem__(self, elem: str):
+        return getelement.wait_on_item(self.parent, elem)
 
     @property
-    def children(self) -> Optional[List[Element]]:
+    def children(self):
         return self.__getitem__("*./*")
-
-    @property
-    def classname(self):
-        return self.__class__.__name__

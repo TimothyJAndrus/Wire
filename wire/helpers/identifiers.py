@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 
-IDENTIFIERS = {
+identifier_table = {
     "#": By.ID,
     "@": By.NAME,
     "*": By.XPATH,

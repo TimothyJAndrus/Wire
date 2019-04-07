@@ -1,268 +1,93 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Copyright (c) <2019> <Jarad Dingman>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
 from __future__ import annotations
 
-from types import TracebackType
-from typing import Any, List, Optional
-
 # External deps
-from loguru import logger
-from typeguard import typechecked
+from wire.helpers import identifiers
+from wire.helpers import getelement
+from wire.helpers import timer
+from wire.helpers import url
 
-# LOCAL DEPS
-from wire.element import Element, ToElementConverter
-
-from wire.utilities.decorators import timer
-from wire.utilities.constants import IDENTIFIERS
-from wire.utilities.helpers import log, valid_url, func_name
+from wire.exceptions import InvalidBrowserException
+from wire.element import ToElementConverter
 
 # Selenium libs
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.firefox.options import Options as FOptions
 from selenium.webdriver.firefox.webelement import FirefoxWebElement
-from selenium.webdriver.chrome.options import Options as Chrome_Options
-from selenium.webdriver.firefox.options import Options as Firefox_Options
+from selenium.webdriver.chrome.options import Options as COptions
+from selenium.webdriver.common.desired_capabilities import (
+    DesiredCapabilities as DC,
+)
 from selenium.common.exceptions import TimeoutException, WebDriverException
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
-    """
-        This class overrides the firefox chrome and remote driver to
-        allow true wrapping functionality. 
-    """
+    def __init__(self, headless: bool = False, remote: str = ""):
 
-    @typechecked
-    def __init__(self, headless: bool = False, remote: str = "") -> None:
-        """
-            Browser class that acts as the parent wrapper
-            to the selenium api. Able to wrap both chrome and firefox
-            based on subclasses
-
-            @param head: bool -> whether the browser will be
-                                headless or not.
-            @returns None
-        """
-
-        if self.classname not in ["Firefox", "Chrome"]:
-            raise ValueError(f"Browser type: {self.classname} not supported")
+        if self.__class__.__name__ not in ["Firefox", "Chrome"]:
+            raise InvalidBrowserException(
+                f"{self.__class__.__name__} is a bad browser type"
+            )
 
         self.options = (
-            Firefox_Options()
-            if self.classname == "Firefox"
-            else Chrome_Options()
+            FOptions() if self.__class__.__name__ == "Firefox" else COptions()
         )
 
         if headless:  # pragma: no cover
             self.options.add_argument("--headless")
-            log(logger.info, self.classname, func_name(), "headless mode")
 
-        self.remote = True if remote else False
+        getattr(
+            webdriver, ("Remote" if remote else self.__class__.__name__)
+        ).__init__(
+            self,
+            options=self.options,
+            desired_capabilities=getattr(DC, self.__class__.__name__.upper()),
+            **({"command_executor": remote} if remote else {}),
+        )
 
-        if remote:  # pragma: no cover
-            webdriver.Remote.__init__(
-                self,
-                desired_capabilities=getattr(
-                    DesiredCapabilities, self.classname.upper()
-                ),
-                command_executor=remote,
-            )
-        else:
-            getattr(webdriver, self.classname).__init__(
-                self,
-                options=self.options,
-                desired_capabilities=getattr(
-                    DesiredCapabilities, self.classname.upper()
-                ),
-            )
-            self.set_page_load_timeout(15)
-            self.implicitly_wait(5)
-
-        log(logger.info, self.classname, func_name(), "Browser instantiated")
+        self.set_page_load_timeout(15)
+        self.implicitly_wait(5)
 
     def __enter__(self) -> Browser:
-        """
-            The enter dunder for contexts
-
-            @returns Browser
-        """
         return self
 
-    def __exit__(
-        self, typex: Any, value: Any, tb: Optional[TracebackType]
-    ) -> None:
-        """
-            Exit dunder for the closing of both the object
-            or a context surrounding the object
+    def __exit__(self, typex, value, tb):
+        getattr(
+            webdriver, "Remote" if self._is_remote else self.__class__.__name__
+        ).quit(self)
 
-            @param type ->
-            @param value ->
-            @param traceback ->
-            @returns None
-        """
-        if self.remote:  # pragma: no cover
-            webdriver.remote.quit(self)
-        else:
-            getattr(webdriver, self.classname).quit(self)
-        log(logger.info, self.classname, func_name(), "Destroyed browser")
-
-    @typechecked
     def __str__(self) -> str:
-        """
-            Dunder for representing the object as a string
+        return self.__class__.__name__
 
-            @returns string
-        """
-        return self.classname
-
-    @typechecked
     def __repr__(self) -> str:
-        """
-            Dunder for representing the object as a string
-
-            @returns string
-        """
         return self.__str__()
 
-    @typechecked
     @ToElementConverter()
-    def __getitem__(
-        self, elem: str, delay: int = 5
-    ) -> Optional[List[Element]]:
-        """ 
-            JQuery-esque element finding function
+    def __getitem__(self, elem: str):
+        return getelement.wait_on_item(self, elem)
 
-            Keyword arguments:
-            element -- the element to find given an identifier
-                .   -- class
-                #   -- id
-                _   -- css
-                *   -- xpath
-                @   -- name
-                ~   -- tag name
-
-            @param elem: str -> The string to identify the element
-            @param delay: int -> The time to wait for the element to show
-            @returns List of Elements
-        """
-        try:
-            typex = IDENTIFIERS[elem[0]]
-        except KeyError:
-            raise ValueError("Missing valid identifier")
-
-        try:
-            return self.__wait_for(typex, elem, delay)
-        except TimeoutException:
-            return None
-
-    @typechecked
     def __call__(self, url: str) -> bool:
-        """
-            Basically a wrapper around get for those who want to save
-            the keystrokes
-
-            @param url: str -> The url to visit
-        """
         return self.get(url)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    def __wait_for(
-        self, identifier: By, elem: str, delay: int
-    ) -> List[Element]:
-        """
-            A method for explicit waits
+    @timer.timer
+    def get(self, vurl: str) -> bool:
+        url.validate_url(vurl)
 
-            Shouldn't be called directly... necessarily
+        try:
+            super(Browser, self).get(vurl)
+        except TimeoutException:  # pragma: no cover
+            return False
 
-            @param identifier : By -> Locator
-            @param element : str -> A webelement to find with an identifier
-            @param delay : int -> Amount of time to wait in seconds
-            @returns List of Elements
-        """
-
-        log(
-            logger.info,
-            self.classname,
-            func_name(),
-            f"Waiting on element: [{identifier}] -> {elem[1:]}",
-        )
-
-        WebDriverWait(self, delay).until(
-            EC.presence_of_element_located((identifier, elem[1:]))
-        )
-
-        return self.find_elements(identifier, elem[1:])
-
-    @timer
-    @typechecked
-    def get(self, url: str) -> bool:
-        """
-            Function to wrap seleniums get method
-
-            @param url : str
-        """
-        if valid_url(url):
-            log(logger.info, self.classname, func_name(), f"Retrieving: {url}")
-            try:
-                super(Browser, self).get(url)
-            except TimeoutException:  # pragma: no cover
-                log(
-                    logger.warning,
-                    self.classname,
-                    func_name(),
-                    f"{url} raised a timeout exception",
-                )
-                return False
-            return True
-
-        log(
-            logger.warning,
-            self.classname,
-            func_name(),
-            f"{url} is not a valid url",
-        )
-        return False
+        return True
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    @property
-    def classname(self):
-        """
-            Function to get the name of the class without
-            using the ugly dunder method
-
-            @returns string
-        """
-        return self.__class__.__name__
-
     @property
     def links(self) -> Optional[List[str]]:
         """

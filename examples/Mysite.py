@@ -23,10 +23,8 @@ class PersonalPage(wire.Page):
 
 
 def main():
-    with wire.Chrome(True) as b:
+    with wire.Chrome(True, remote="http://localhost:4444/wd/hub") as b:
         personalpage = PersonalPage(b)
-        print(dir(personalpage))
-        print(type(personalpage.topHero))
 
 
 main()
