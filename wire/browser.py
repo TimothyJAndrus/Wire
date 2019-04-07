@@ -3,9 +3,12 @@
 
 from __future__ import annotations
 
+import functools
+
 # External deps
 from wire.helpers import identifiers
 from wire.helpers import getelement
+from wire.helpers import logging
 from wire.helpers import timer
 from wire.helpers import url
 
@@ -30,6 +33,9 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
     def __init__(self, headless: bool = False, remote: str = ""):
 
         if self.__class__.__name__ not in ["Firefox", "Chrome"]:
+            logging.logger.error(
+                f"{self.__class__.__name__} is a bad browser type"
+            )
             raise InvalidBrowserException(
                 f"{self.__class__.__name__} is a bad browser type"
             )
@@ -50,6 +56,11 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
             **({"command_executor": remote} if remote else {}),
         )
 
+        logging.logger.info(f"Instance of {self.__class__.__name__} created")
+
+        if headless:
+            logging.logger.info(f"    -> Created in headless mode")
+
         self.set_page_load_timeout(15)
         self.implicitly_wait(5)
 
@@ -60,6 +71,7 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
         getattr(
             webdriver, "Remote" if self._is_remote else self.__class__.__name__
         ).quit(self)
+        logging.logger.info(f"Instance of {self.__class__.__name__} destroyed")
 
     def __str__(self) -> str:
         return self.__class__.__name__
@@ -82,7 +94,9 @@ class Browser(webdriver.Firefox, webdriver.Chrome, webdriver.Remote):
 
         try:
             super(Browser, self).get(vurl)
+            logging.logger.info(f"Visit: {self.url}")
         except TimeoutException:  # pragma: no cover
+            logging.logger.warning(f"{vurl} not retrieved before timeout")
             return False
 
         return True

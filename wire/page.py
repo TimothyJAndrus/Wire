@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from wire.helpers import getelement
+from wire.helpers import logging
 
 from wire.element import ToElementConverter
 
@@ -38,10 +39,13 @@ class Page(object, metaclass=PageMeta):
                 value = value
 
             elements = self.__getitem__(value)
+
             if elements:
                 setattr(self, key, elements[index])
             else:
                 pass  # What to do if none is returned
+                logging.logger.error("Couldn't find elements class variable")
+        logging.logger.info(f"Created {self.__class__.__name__} Object")
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.url})"

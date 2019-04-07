@@ -3,6 +3,8 @@
 
 import re
 
+from wire.helpers import logging
+
 from wire.exceptions import InvalidURLException
 
 URL_REGEX = re.compile(
@@ -18,5 +20,6 @@ URL_REGEX = re.compile(
 
 def validate_url(url: str) -> bool:
     if not re.match(URL_REGEX, url):
+        logging.logger.error(f"{url} is not a valid url")
         raise InvalidURLException(f"{url} is not a valid url")
     return True
